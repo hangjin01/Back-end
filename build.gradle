@@ -9,9 +9,10 @@ version = '0.0.1-SNAPSHOT'
 description = 'Back-end'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    // Toolchain configuration removed to use local JAVA_HOME
+    // toolchain {
+    //    languageVersion = JavaLanguageVersion.of(21)
+    // }
 }
 
 configurations {
@@ -39,6 +40,7 @@ dependencies {
     runtimeOnly 'io.micrometer:micrometer-registry-influx'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.integration:spring-integration-mqtt'
 }
 
 tasks.named('test') {

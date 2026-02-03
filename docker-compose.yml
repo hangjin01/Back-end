@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 1. MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - iot-network
+
+  # 2. InfluxDB (Database)
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=iot_data
+      - INFLUXDB_ADMIN_USER=root
+      - INFLUXDB_ADMIN_PASSWORD=root
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    networks:
+      - iot-network
+
+  # 3. Spring Boot Backend
+  backend:
+    build: . # Build from the current directory (Back-end)
+    ports:
+      - "8000:8000"
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_USER=root
+      - INFLUXDB_PASSWORD=root
+      - INFLUXDB_DATABASE=iot_data
+      - MQTT_BROKER_URL=tcp://mosquitto:1883
+      - MQTT_CLIENT_ID=spring-boot-backend
+      - MQTT_TOPIC=home/livingroom/temp
+    depends_on:
+      - mosquitto
+      - influxdb
+    networks:
+      - iot-network
+
+  # 4. Python Publisher (Fake Data Generator)
+  publisher:
+    build: ./python_publisher # Build from python_publisher subdirectory
+    environment:
+      - BROKER_URL=mosquitto
+      - BROKER_PORT=1883
+    depends_on:
+      - mosquitto
+    networks:
+      - iot-network
+
+networks:
+  iot-network:
+    driver: bridge
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
+  influxdb_data:

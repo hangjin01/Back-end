@@ -1,5 +1,7 @@
 package com.example.backend;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +13,26 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorData {
+    @JsonProperty("sensor_id")
+    @JsonAlias("sensorId")
     private String sensorId;
-    private Double temp;          // Float 대응
-    private Double humidity;      // Float 대응
-    private Double soilMoisture;  // Float 대응
-    private Integer co2;          // Int 대응
-    private Integer light;        // Int 대응
+
+    @JsonProperty("temperature")
+    @JsonAlias("temp")
+    private Double temperature;
+
+    // Frontend expects 'humidity'
+    private Double humidity;
+
+    @JsonProperty("soilMoisture")
+    private Double soilMoisture;
+
+    // Frontend expects 'co2'
+    private Integer co2;
+
+    @JsonProperty("lightIntensity")
+    @JsonAlias("light")
+    private Integer lightIntensity;
+
     private Instant time;
 }

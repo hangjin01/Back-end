@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.0.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Back-end'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web' // webmvc 대신 일반 starter-web 권장
+
+    // [핵심 추가] InfluxDB와 통신하기 위한 라이브러리
+    implementation 'org.influxdb:influxdb-java:2.23'
+
+    // Lombok 설정 (Annotation Processing이 켜져 있어야 작동함)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 모니터링 관련 (기존 유지)
+    implementation 'org.springframework.boot:spring-boot-starter-micrometer-metrics'
+    runtimeOnly 'io.micrometer:micrometer-registry-influx'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
